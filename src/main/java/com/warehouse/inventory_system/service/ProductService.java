@@ -35,12 +35,29 @@ public class ProductService {
 
         existingProduct.setName(updatedData.getName());
         existingProduct.setQuantity(updatedData.getQuantity());
+        existingProduct.setDescription(updatedData.getDescription());
+        existingProduct.setExpirationDate(updatedData.getExpirationDate());
         productRepository.save(existingProduct);
+
+
     }
 
-    // NEW: Delete a product by its ID
+    // Delete a product by its ID
     public void deleteProduct(String id) {
         productRepository.deleteById(id);
+    }
+
+    // Selling
+    public void sellProduct(String id, Integer amountToSell) {
+
+        Product product = getProductById(id);
+
+        if (product.getQuantity() < amountToSell) {
+            throw new NotEnoughStockException("Only " + product.getQuantity() + " items left in stock!");
+        }
+
+        product.setQuantity(product.getQuantity() - amountToSell);
+        productRepository.save(product);
     }
 
 }

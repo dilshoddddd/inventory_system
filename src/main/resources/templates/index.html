@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Warehouse Inventory System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9;}
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #007BFF; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        .danger { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>📦 Warehouse Inventory Dashboard</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Expiration Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+        <td th:text="${product.id}">1001</td>
+        <td th:text="${product.name}">Test Product</td>
+        <td th:text="${product.description}">Test Description</td>
+
+        <td th:text="${product.quantity}"
+            th:class="${product.quantity < 5} ? 'danger' : ''">10</td>
+
+        <td th:text="${product.expirationDate}">2026-12-31</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -47,4 +47,10 @@ public class ProductController {
         productService.updateProduct(id, product);
         return "Product updated successfully!";
     }
+
+    @PostMapping("/products/{id}/sell")
+    public String sellProduct(@PathVariable String id, @RequestParam Integer amount) {
+        productService.sellProduct(id, amount);
+        return amount + " items sold successfully!";
+    }
 }
