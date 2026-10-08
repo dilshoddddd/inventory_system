@@ -1,3 +1,12 @@
 spring:
   application:
     name: inventory-system
+  datasource:
+    # Говорим H2 сохранять данные в файл "warehouse_db" прямо в папке проекта
+    url: jdbc:h2:file:./warehouse_db
+    username: sa
+    password:
+  jpa:
+    hibernate:
+        # Говорим Spring'у: "Не удаляй таблицы при выключении, а просто обновляй их"
+      ddl-auto: update

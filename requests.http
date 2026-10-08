@@ -1,0 +1,25 @@
+### 1. Add a new product
+POST http://localhost:8080/products
+Content-Type: application/json
+
+{
+  "id": "2001",
+  "name": "Steel Nails",
+  "quantity": 500
+}
+
+### 2. Update the product (Change name and quantity)
+PUT http://localhost:8080/products/2001
+Content-Type: application/json
+
+{
+  "id": "2001",
+  "name": "Premium Steel Nails",
+  "quantity": 350
+}
+
+### 3. Verify the update
+GET http://localhost:8080/products/2001
+
+### Поиск несуществующего товара
+GET http://localhost:8080/products/999999
