@@ -44,6 +44,7 @@ public class Product {
     public LocalDate getExpirationDate() { return expirationDate; }
 
     // Setters
+    public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
