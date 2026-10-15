@@ -80,4 +80,18 @@ public class WebController {
         }
         return "redirect:/";
     }
+
+    @PostMapping("/web/products/batches/add")
+    public String addBatchFromWeb(@RequestParam String productId,
+                                  @RequestParam Integer quantity,
+                                  @RequestParam(required = false) java.time.LocalDate expirationDate,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            productService.addBatch(productId, quantity, expirationDate);
+            redirectAttributes.addFlashAttribute("successMessage", "Batch added successfully to product " + productId);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error adding batch: " + e.getMessage());
+        }
+        return "redirect:/";
+    }
 }

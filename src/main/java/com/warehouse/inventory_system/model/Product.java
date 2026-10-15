@@ -1,11 +1,10 @@
 package com.warehouse.inventory_system.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Min;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate; // <-- Не забудь этот импорт!
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Product {
@@ -19,34 +18,40 @@ public class Product {
 
     private String description;
 
-    @NotNull(message = "Quantity needed")
-    @Min(value = 0, message = "Quantity cannot be negative")
-    private Integer quantity;
+    // cascade = ALL: Löschen wir das Produkt, werden alle seine Chargen gelöscht.
+    // orphanRemoval = true: Leere Chargen, die wir aus der Liste entfernen, werden aus der DB gelöscht.
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ProductBatch> batches = new ArrayList<>();
 
-    private LocalDate expirationDate;
+    public Product() {}
 
-    public Product() {
-    }
-
-    public Product(String id, String name, String description, Integer quantity, LocalDate expirationDate) {
+    public Product(String id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.quantity = quantity;
-        this.expirationDate = expirationDate;
+    }
+
+    // NEW: Hilfsmethode, um die Gesamtmenge aller Chargen zu berechnen
+    public int getTotalQuantity() {
+        return batches.stream().mapToInt(ProductBatch::getQuantity).sum();
     }
 
     // Getters
     public String getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }
-    public Integer getQuantity() { return quantity; }
-    public LocalDate getExpirationDate() { return expirationDate; }
+    public List<ProductBatch> getBatches() { return batches; }
 
     // Setters
     public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
-    public void setExpirationDate(LocalDate expirationDate) { this.expirationDate = expirationDate; }
+    public void setBatches(List<ProductBatch> batches) { this.batches = batches; }
+
+    // Hilfsmethode zum Hinzufügen einer Charge
+    public void addBatch(ProductBatch batch) {
+        batches.add(batch);
+        batch.setProduct(this);
+    }
 }

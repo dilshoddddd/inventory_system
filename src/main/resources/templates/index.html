@@ -3,103 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>Warehouse Inventory System</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f4f7f6; color: #333;}
-        h1, h2 { color: #2c3e50; }
-        .container { max-width: 1200px; margin: auto; }
-
-        .alert { padding: 15px; margin-bottom: 20px; border-radius: 4px; }
-        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; overflow: visible;} /* overflow: visible важно для выпадающего меню */
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; position: relative;}
-        th { background-color: #3498db; color: white; font-weight: 600; text-transform: uppercase; font-size: 0.9em; letter-spacing: 0.5px;}
-        tr:hover { background-color: #fcfcfc; }
-        .danger-text { color: #e74c3c; font-weight: bold; }
-
-        .form-container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
-        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
-        .form-group label { margin-bottom: 5px; font-weight: 500; color: #555;}
-        input[type="text"], input[type="number"], input[type="date"] { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; }
-
-        .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; font-weight: bold; color: white;}
-        .btn-primary { background-color: #2ecc71; }
-        .btn-primary:hover { background-color: #27ae60; }
-
-        .sell-form { display: flex; gap: 5px; align-items: center;}
-        .sell-input { width: 50px; padding: 5px !important;}
-        .btn-sell { background-color: #f39c12; color: white; padding: 6px 10px; border: none; border-radius: 4px; cursor: pointer;}
-
-        /* === СТИЛИ ДЛЯ МЕНЮ ТРИ ТОЧКИ === */
-        .dropdown { position: relative; display: inline-block; }
-        .dropbtn { background-color: transparent; color: #555; padding: 8px 12px; font-size: 20px; border: none; cursor: pointer; border-radius: 50%; font-weight: bold;}
-        .dropbtn:hover { background-color: #eee; }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            min-width: 120px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 10;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .dropdown-content.show { display: block; }
-
-        .dropdown-content a, .dropdown-content button {
-            color: #333;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            background: none;
-            border: none;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-        .dropdown-content a:hover, .dropdown-content button:hover { background-color: #f1f1f1; }
-        .text-danger { color: #e74c3c !important; }
-        /* ================================ */
-    </style>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/index.js}" defer></script>
 </head>
 <body>
-
 <div class="container">
     <h1>📦 Warehouse Inventory Dashboard</h1>
 
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <div th:if="${successMessage}"
+         class="alert alert-success"
+         th:text="${successMessage}"></div>
 
-    <div class="form-container">
-        <h2>Add New Product</h2>
-        <form th:action="@{/web/products/add}" th:object="${newProduct}" method="post" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
-            <div class="form-group">
-                <label for="id">ID (SKU):</label>
-                <input type="text" id="id" th:field="*{id}" required placeholder="e.g., 4001">
-            </div>
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" th:field="*{name}" required placeholder="Product Name">
-            </div>
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <input type="text" id="description" th:field="*{description}" placeholder="Optional details">
-            </div>
-            <div class="form-group">
-                <label for="quantity">Quantity:</label>
-                <input type="number" id="quantity" th:field="*{quantity}" required min="0" value="0">
-            </div>
-            <div class="form-group">
-                <label for="expirationDate">Expiration Date:</label>
-                <input type="date" id="expirationDate" th:field="*{expirationDate}">
-            </div>
-            <button type="submit" class="btn btn-primary">Add Product</button>
-        </form>
+    <div th:if="${errorMessage}"
+         class="alert alert-danger"
+         th:text="${errorMessage}"></div>
+
+    <div class="form-row">
+        <div class="form-container">
+            <h2>1. Add Product to Catalog</h2>
+
+            <form th:action="@{/web/products/add}"
+                  th:object="${newProduct}"
+                  method="post">
+
+                <div class="form-group">
+                    <label for="new-product-id">ID (SKU):</label>
+                    <input type="text" id="new-product-id" th:field="*{id}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-product-name">Name:</label>
+                    <input type="text" id="new-product-name" th:field="*{name}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-product-description">Description:</label>
+                    <input type="text" id="new-product-description" th:field="*{description}">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Create Product</button>
+            </form>
+        </div>
+
+        <div class="form-container batch-container">
+            <h2>2. Add Inventory Batch</h2>
+
+            <form th:action="@{/web/products/batches/add}" method="post">
+                <div class="form-group">
+                    <label for="productId">Select Product:</label>
+                    <select id="productId" name="productId" required>
+                        <option value="" disabled selected>-- Select a Product --</option>
+                        <option th:each="p : ${products}"
+                                th:value="${p.id}"
+                                th:text="|${p.name} (${p.id})|"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="expirationDate">Expiration Date:</label>
+                    <input type="date" id="expirationDate" name="expirationDate">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-batch">Add Batch</button>
+            </form>
+        </div>
     </div>
 
     <table>
@@ -108,46 +80,88 @@
             <th>ID</th>
             <th>Name</th>
             <th>Description</th>
-            <th>Qty</th>
-            <th>Exp. Date</th>
+            <th>Total Qty</th>
+            <th>Batches (Qty &amp; Exp)</th>
             <th>Quick Sell</th>
-            <th style="text-align: right;">Actions</th>
+            <th class="actions-heading">Actions</th>
         </tr>
         </thead>
+
         <tbody>
         <tr th:if="${products.empty}">
-            <td colspan="7" style="text-align: center; color: #777;">No products in inventory. Add one above!</td>
+            <td colspan="7" class="empty-message">
+                No products in catalog. Add one above!
+            </td>
         </tr>
 
         <tr th:each="product : ${products}">
             <td th:text="${product.id}">1001</td>
-            <td th:text="${product.name}">Test Product</td>
-            <td th:text="${product.description}">Test Description</td>
-            <td th:text="${product.quantity}" th:classappend="${product.quantity < 5} ? 'danger-text' : ''" style="font-weight: bold; font-size: 1.1em;">10</td>
-            <td th:text="${product.expirationDate}">2026-12-31</td>
+            <td th:text="${product.name}">Test</td>
+            <td th:text="${product.description}">Desc</td>
 
-            <!-- Колонка Quick Sell осталась как была -->
+            <td th:text="${product.getTotalQuantity()}"
+                th:classappend="${product.getTotalQuantity() < 5} ? 'danger-text' : ''"
+                class="total-quantity">
+                10
+            </td>
+
             <td>
-                <form th:action="@{/web/products/sell}" method="post" class="sell-form">
+                <ul class="batch-list">
+                    <li th:each="batch : ${product.batches}">
+                        <span th:text="${batch.quantity} + 'x'"></span>
+
+                        <span th:if="${batch.expirationDate}"
+                              th:text="' (Exp: ' + ${batch.expirationDate} + ')'"
+                              th:style="${batch.expirationDate.isBefore(T(java.time.LocalDate).now())} ? 'color: red;' : ''"></span>
+
+                        <span th:unless="${batch.expirationDate}">(No Exp)</span>
+                    </li>
+
+                    <li th:if="${product.batches.empty}">
+                        <em>Out of stock</em>
+                    </li>
+                </ul>
+            </td>
+
+            <td>
+                <form th:action="@{/web/products/sell}"
+                      method="post"
+                      class="sell-form">
                     <input type="hidden" name="id" th:value="${product.id}">
-                    <input type="number" name="amount" class="sell-input" min="1" th:max="${product.quantity}" value="1" required>
-                    <button type="submit" class="btn-sell" th:disabled="${product.quantity <= 0}">Sell</button>
+
+                    <input type="number"
+                           name="amount"
+                           class="sell-input"
+                           min="1"
+                           th:max="${product.getTotalQuantity()}"
+                           value="1"
+                           required>
+
+                    <button type="submit"
+                            class="btn-sell"
+                            th:disabled="${product.getTotalQuantity() <= 0}">
+                        Sell
+                    </button>
                 </form>
             </td>
 
-            <!-- NEW: Колонка с тремя точками -->
-            <td style="text-align: right;">
+            <td class="actions-cell">
                 <div class="dropdown">
-                    <!-- Кнопка 3 точки. Передаем ID товара в JS -->
-                    <button class="dropbtn" th:data-product-id="${product.id}" onclick="toggleDropdown(this.dataset.productId)">&#8942;</button>
+                    <button type="button"
+                            class="dropbtn"
+                            aria-label="Product actions"
+                            aria-expanded="false">
+                        &#8942;
+                    </button>
 
-                    <!-- Само меню (скрыто по умолчанию) -->
-                    <div th:id="'dropdown-' + ${product.id}" class="dropdown-content">
-                        <!-- Ссылка на редактирование -->
-                        <a th:href="@{/web/products/edit/{id}(id=${product.id})}">✏️ Edit</a>
+                    <div class="dropdown-content">
+                        <a th:href="@{/web/products/edit/{id}(id=${product.id})}">
+                            ✏️ Edit Product
+                        </a>
 
-                        <!-- Форма удаления -->
-                        <form th:action="@{/web/products/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                        <form th:action="@{/web/products/delete}"
+                              method="post"
+                              onsubmit="return confirm('Are you sure you want to delete this product and all its batches?');">
                             <input type="hidden" name="id" th:value="${product.id}">
                             <button type="submit" class="text-danger">🗑️ Delete</button>
                         </form>
@@ -158,27 +172,5 @@
         </tbody>
     </table>
 </div>
-
-<!-- JS для работы выпадающего меню -->
-<script>
-    // Открывает меню при клике на 3 точки
-    function toggleDropdown(id) {
-        document.getElementById("dropdown-" + id).classList.toggle("show");
-    }
-
-    // Закрывает меню, если кликнуть в любое другое место на экране
-    window.onclick = function(event) {
-        if (!event.target.matches('.dropbtn')) {
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                }
-            }
-        }
-    }
-</script>
-
 </body>
 </html>

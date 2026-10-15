@@ -1,10 +1,11 @@
 package com.warehouse.inventory_system.service;
 
-import com.warehouse.inventory_system.model.Product;
+import com.warehouse.inventory_system.model.*;
 import com.warehouse.inventory_system.repository.ProductRepository;
 import com.warehouse.inventory_system.exception.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -31,15 +32,20 @@ public class ProductService {
 
     public void updateProduct(String id, Product updatedData) {
         Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Cannot update. Product with ID " + id + " not found!"));
+                .orElseThrow(() -> new ProductNotFoundException("Cannot update. Product not found!"));
 
         existingProduct.setName(updatedData.getName());
-        existingProduct.setQuantity(updatedData.getQuantity());
         existingProduct.setDescription(updatedData.getDescription());
-        existingProduct.setExpirationDate(updatedData.getExpirationDate());
+        // Quantity & Expiration Date ändern wir hier nicht mehr – sie gehören zu den Chargen!
         productRepository.save(existingProduct);
+    }
 
-
+    // new charge
+    public void addBatch(String productId, Integer quantity, LocalDate expirationDate) {
+        Product product = getProductById(productId);
+        ProductBatch newBatch = new ProductBatch(product, quantity, expirationDate);
+        product.addBatch(newBatch);
+        productRepository.save(product);
     }
 
     // Delete a product by its ID
@@ -49,14 +55,36 @@ public class ProductService {
 
     // Selling
     public void sellProduct(String id, Integer amountToSell) {
-
         Product product = getProductById(id);
 
-        if (product.getQuantity() < amountToSell) {
-            throw new NotEnoughStockException("Only " + product.getQuantity() + " items left in stock!");
+        if (product.getTotalQuantity() < amountToSell) {
+            throw new NotEnoughStockException("Only " + product.getTotalQuantity() + " items left in stock!");
         }
 
-        product.setQuantity(product.getQuantity() - amountToSell);
+        List<ProductBatch> batches = product.getBatches();
+        // Sortiere Chargen nach MHD (frühestes zuerst, null am Ende)
+        batches.sort(java.util.Comparator.comparing(ProductBatch::getExpirationDate,
+                java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())));
+
+        int remainingToSell = amountToSell;
+
+        for (ProductBatch batch : batches) {
+            if (remainingToSell <= 0) break;
+
+            if (batch.getQuantity() <= remainingToSell) {
+                // Diese Charge wird komplett aufgebraucht
+                remainingToSell -= batch.getQuantity();
+                batch.setQuantity(0);
+            } else {
+                // Diese Charge wird nur teilweise aufgebraucht
+                batch.setQuantity(batch.getQuantity() - remainingToSell);
+                remainingToSell = 0;
+            }
+        }
+
+        // Alle Chargen entfernen, deren Menge auf 0 gefallen ist (orphanRemoval löscht sie aus der DB)
+        batches.removeIf(batch -> batch.getQuantity() == 0);
+
         productRepository.save(product);
     }
 

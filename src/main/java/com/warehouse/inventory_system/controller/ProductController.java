@@ -28,7 +28,7 @@ public class ProductController {
         return "Product added successfully!";
     }
 
-    // NEW: @PathVariable takes the {id} from the URL and puts it into the String id variable
+    // @PathVariable takes the {id} from the URL and puts it into the String id variable
     @GetMapping("/products/{id}")
     public Product getProductById(@PathVariable String id) {
         return productService.getProductById(id);
